@@ -28,14 +28,14 @@
     },
     "plugins": [
       "expo-router",
-    
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends.",
-          "cameraPermission": "Necesitamos acceder a la camara para poder sacar fotos lindas!",
-          "microphonePermission": " Necesitamos permisos para grabar tu hermosa vos"
-        }
-
+      [
+      "expo-image-picker",
+      {
+        "photosPermission": "The app accesses your photos to let you share them with your friends.",
+        "cameraPermission": "Necesitamos acceder a la camara para poder sacar fotos lindas!",
+        "microphonePermission": " Necesitamos permisos para grabar tu hermosa vos"
+      }
+    ]
     ],
     "experiments": {
       "typedRoutes": true
