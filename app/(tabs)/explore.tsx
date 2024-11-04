@@ -1,14 +1,25 @@
-import { useState } from "react";
-import { Button, Image, View, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import { Button, Image, View, StyleSheet, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState<string | null>(null);
 
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+  // Solicitar permisos para la cámara
+  useEffect(() => {
+    (async () => {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permiso Denegado",
+          "Se necesita acceso a la cámara para tomar fotos."
+        );
+      }
+    })();
+  }, []);
+
+  const takePhoto = async () => {
+    let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -23,7 +34,7 @@ export default function ImagePickerExample() {
 
   return (
     <View style={styles.container}>
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      <Button title="Take a photo" onPress={takePhoto} />
       {image && <Image source={{ uri: image }} style={styles.image} />}
     </View>
   );
