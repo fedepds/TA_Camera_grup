@@ -5,7 +5,6 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   Alert,
   Image,
@@ -13,12 +12,16 @@ import {
   Button,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import styles from "../styles"; // Importa los estilos
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function ListaTareas() {
   const [nombreTarea, setNombreTarea] = useState("");
   const [descripcionTarea, setDescripcionTarea] = useState("");
   const [tareas, setTareas] = useState([]);
   const [fotoUri, setFotoUri] = useState(null);
+  const [tareaEditando, setTareaEditando] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -30,12 +33,35 @@ export default function ListaTareas() {
         );
       }
     })();
+
+    // Cargar tareas desde AsyncStorage al iniciar
+    cargarTareas();
   }, []);
+
+  const cargarTareas = async () => {
+    try {
+      const tareasGuardadas = await AsyncStorage.getItem("tareas");
+      if (tareasGuardadas) {
+        setTareas(JSON.parse(tareasGuardadas));
+      }
+    } catch (error) {
+      console.error("Error al cargar tareas", error);
+    }
+  };
+
+  const guardarTareas = async (nuevasTareas) => {
+    try {
+      await AsyncStorage.setItem("tareas", JSON.stringify(nuevasTareas));
+    } catch (error) {
+      console.error("Error al guardar tareas", error);
+    }
+  };
 
   const seleccionarFoto = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled) {
@@ -46,6 +72,7 @@ export default function ListaTareas() {
   const tomarFoto = async () => {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
+      aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled) {
@@ -54,97 +81,72 @@ export default function ListaTareas() {
   };
 
   const agregarTarea = useCallback(() => {
-    if (nombreTarea.trim() && descripcionTarea.trim()) {
-      const nuevaTarea = {
-        id: Date.now().toString(),
-        nombre: nombreTarea,
-        descripcion: descripcionTarea,
-        fotoUri,
-        hecha: false,
-      };
-      setTareas((prevTareas) => [...prevTareas, nuevaTarea]);
+    if (nombreTarea.trim() && descripcionTarea.trim() && fotoUri) {
+      if (tareaEditando) {
+        // Editar tarea existente
+        const nuevasTareas = tareas.map((tarea) =>
+          tarea.id === tareaEditando.id
+            ? {
+                ...tarea,
+                nombre: nombreTarea,
+                descripcion: descripcionTarea,
+                fotoUri,
+              }
+            : tarea
+        );
+        setTareas(nuevasTareas);
+        guardarTareas(nuevasTareas);
+        setTareaEditando(null); // Reiniciar edición
+      } else {
+        // Agregar nueva tarea
+        const nuevaTarea = {
+          id: Date.now().toString(),
+          nombre: nombreTarea,
+          descripcion: descripcionTarea,
+          fotoUri,
+          hecha: false,
+        };
+        const nuevasTareas = [...tareas, nuevaTarea];
+        setTareas(nuevasTareas);
+        guardarTareas(nuevasTareas);
+      }
       setNombreTarea("");
       setDescripcionTarea("");
       setFotoUri(null);
     } else {
       Alert.alert(
         "Campos vacíos",
-        "Por favor completa el nombre y la descripción de la tarea."
+        "Por favor completa el nombre, descripción y foto de la tarea."
       );
     }
-  }, [nombreTarea, descripcionTarea, fotoUri]);
+  }, [nombreTarea, descripcionTarea, fotoUri, tareas, tareaEditando]);
 
-  const cambiarEstadoTarea = useCallback((id) => {
-    setTareas((prevTareas) =>
-      prevTareas.map((tarea) =>
+  const cambiarEstadoTarea = useCallback(
+    (id) => {
+      const nuevasTareas = tareas.map((tarea) =>
         tarea.id === id ? { ...tarea, hecha: !tarea.hecha } : tarea
-      )
-    );
-  }, []);
+      );
+      setTareas(nuevasTareas);
+      guardarTareas(nuevasTareas);
+    },
+    [tareas]
+  );
 
-  const eliminarTarea = useCallback((id) => {
-    setTareas((prevTareas) => prevTareas.filter((item) => item.id !== id));
-  }, []);
+  const eliminarTarea = useCallback(
+    (id) => {
+      const nuevasTareas = tareas.filter((item) => item.id !== id);
+      setTareas(nuevasTareas);
+      guardarTareas(nuevasTareas);
+    },
+    [tareas]
+  );
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 10,
-      backgroundColor: "#fff",
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: "bold",
-      marginBottom: 20,
-      textAlign: "center",
-    },
-    input: {
-      borderWidth: 1,
-      padding: 10,
-      marginBottom: 10,
-      borderRadius: 5,
-      
-    },
-    boton: {
-      backgroundColor: "#4CAF50",
-      padding: 10,
-      borderRadius: 5,
-      alignItems: "center",
-      marginBottom: 10,
-    },
-    textoBoton: {
-      color: "#fff",
-      fontWeight: "bold",
-      fontSize: 16,
-    },
-    tareaContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 10,
-      padding: 10,
-      backgroundColor: "#f9f9f9",
-      borderRadius: 5,
-    },
-    tareaInfo: {
-      flex: 1,
-      marginLeft: 10,
-    },
-    tareaNombre: {
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-    tareaDescripcion: {
-      color: "#666",
-    },
-    tareaImagen: {
-      width: 50,
-      height: 50,
-      borderRadius: 5,
-    },
-    tareaSwitch: {
-      marginRight: 10,
-    },
-  });
+  const cargarTareaParaEditar = (tarea) => {
+    setNombreTarea(tarea.nombre);
+    setDescripcionTarea(tarea.descripcion);
+    setFotoUri(tarea.fotoUri);
+    setTareaEditando(tarea);
+  };
 
   return (
     <View style={styles.container}>
@@ -173,7 +175,9 @@ export default function ListaTareas() {
           />
         )}
         <TouchableOpacity style={styles.boton} onPress={agregarTarea}>
-          <Text style={styles.textoBoton}>Agregar Tarea</Text>
+          <Text style={styles.textoBoton}>
+            {tareaEditando ? "Guardar Cambios" : "Agregar Tarea"}
+          </Text>
         </TouchableOpacity>
         <FlatList
           data={tareas}
@@ -195,10 +199,17 @@ export default function ListaTareas() {
                 value={item.hecha}
                 onValueChange={() => cambiarEstadoTarea(item.id)}
               />
-              <TouchableOpacity onPress={() => eliminarTarea(item.id)}>
-                <Text style={{ color: "red", fontWeight: "bold" }}>
-                  Eliminar
-                </Text>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => cargarTareaParaEditar(item)}
+              >
+                <MaterialIcons name="edit" size={24} color="#4CAF50" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() => eliminarTarea(item.id)}
+              >
+                <MaterialIcons name="delete" size={24} color="#F44336" />
               </TouchableOpacity>
             </View>
           )}
