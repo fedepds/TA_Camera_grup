@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+```markdown
+# Lista de Tareas - React Native App
 
-1. Install dependencies
+Esta es una aplicación de lista de tareas desarrollada en **React Native**. Permite a los usuarios agregar, editar, eliminar tareas, marcar las tareas como hechas, y asociar fotos a las tareas usando la cámara o la galería de imágenes.
+
+## Requisitos
+
+Asegúrate de tener los siguientes requisitos antes de ejecutar la aplicación:
+
+- [Node.js](https://nodejs.org/) instalado en tu sistema.
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) instalado globalmente. Si no lo tienes, instálalo ejecutando el siguiente comando:
+
+  ```bash
+  npm install -g expo-cli
+  ```
+
+- Un emulador de dispositivo o un dispositivo físico para probar la aplicación.
+
+## Instalación
+
+Sigue estos pasos para configurar y ejecutar la aplicación en tu entorno local:
+
+1. **Clonar el repositorio:**
+
+   Primero, clona el repositorio en tu máquina local:
+
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd <NOMBRE_DEL_REPOSITORIO>
+   ```
+
+2. **Instalar dependencias:**
+
+   Ejecuta el siguiente comando para instalar las dependencias del proyecto:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Iniciar la aplicación:**
+
+   Una vez que las dependencias estén instaladas, puedes iniciar la aplicación utilizando Expo:
 
    ```bash
-    npx expo start
+   expo start
    ```
 
-In the output, you'll find options to open the app in a
+   Esto abrirá una página en tu navegador. Puedes escanear el código QR con la aplicación **Expo Go** en tu dispositivo físico para ejecutar la aplicación, o utilizar un emulador de Android o iOS.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Uso de la aplicación
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Agregar una tarea:** Ingresa el nombre y la descripción de la tarea, y selecciona o toma una foto. Luego presiona el botón "Agregar Tarea".
+- **Editar una tarea:** Haz clic en el ícono de editar de una tarea existente para modificarla.
+- **Eliminar una tarea:** Haz clic en el ícono de eliminar de una tarea para borrarla de la lista.
+- **Marcar como hecha:** Usa el interruptor junto a cada tarea para marcarla como completada.
 
-## Get a fresh project
+## Permisos necesarios
 
-When you're ready, run:
+La aplicación requiere acceso a la cámara para tomar fotos, y acceso a la galería para seleccionar imágenes.
 
-```bash
-npm run reset-project
-```
+- **Cámara:** Se solicita acceso a la cámara al iniciar la aplicación.
+- **Galería de imágenes:** Puedes seleccionar una foto desde la galería de imágenes del dispositivo.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Tecnologías utilizadas
 
-## Learn more
+- **React Native**
+- **Expo**
+- **AsyncStorage**
+- **Expo ImagePicker**
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
